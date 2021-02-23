@@ -22,16 +22,40 @@ class Game {
     constructor(){
         this.deck = this.generateDeck();
         this.shuffleDeck();
+        this.getCardBtn = document.querySelector('#hit')
+        this.getCards();
+        this.playersPoints = 0;
+        this.dealersPoints = 0;
+        
     }
 
     shuffleDeck(){
         return this.deck.sort(() => Math.random() - 0.5)
     }
 
+    countPoints(card, parentId){
+        // const property = parentId.replace('Cards', 'Points');
+        // this[property] += card.value;
+        // document.querySelector(`#${property}`).innerHTML = this[property];
+
+        if(parentId == 'playersCards'){
+            this.playersPoints += card.value
+            const playerPoints = document.querySelector('#playersPoints')
+            playerPoints.textContent = this.playersPoints
+        }
+        else {
+            this.dealersPoints += card.value
+            const dealerPoints = document.querySelector('#dealersPoints')
+            dealerPoints.textContent = this.dealersPoints
+        }
+        this.checkCards()
+    }
+
     displayDeck(parentId){
-        console.log(parentId);
-        this.deck[0].render(parentId);
-        this.deck.shift()
+        const card = this.deck[0];
+        card.render(parentId);
+        this.deck.shift();
+        this.countPoints(card, parentId)
     }
 
     generateDeck(){
@@ -43,15 +67,31 @@ class Game {
         });
         return deck;
     }
+
+    getCards(){
+        this.getCardBtn.addEventListener('click', () => {
+            const limit = this.playersPoints == 0 && this.dealersPoints == 0 ? 2 : 1;
+            ['playersCards', 'dealersCards'].forEach(el => {
+                for(let i = 0; i < limit; i++){
+                    this.displayDeck(el);
+                }
+            })
+        })
+    }
+
+    checkCards(){
+        const message = document.querySelector('#message');
+        if(this.dealersPoints == 21 || this.dealersPoints == 22 && document.querySelector('#dealersCards').children.length == 2){
+             message.textContent = 'Dealer Wins !!!'
+             message.style.color = 'red'
+             message.style.display = 'block'
+            
+        }     
+    }
 }
 
 const blackJack = new Game();
 
-['playersCards', 'dealersCards'].forEach(el => {
-    for(let i = 0; i < 2; i++){
-        console.log(el);
-        blackJack.displayDeck(el);
-    }
-})
+
 
 
