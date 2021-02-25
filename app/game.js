@@ -22,18 +22,55 @@ class Game {
     constructor(){
         this.deck = this.generateDeck();
         this.shuffleDeck();
-        this.getCardBtn = document.querySelector('#hit')
-        this.getCards();
+        this.getCardBtn = document.querySelector('#hit');
+        this.getPlayerCards();
         this.playersPoints = 0;
         this.dealersPoints = 0;
-        
+        this.dealerMove = false;
+        this.standBtn = document.querySelector('#stand');
+        this.standBtn.addEventListener('click', this.getDealersCards);
+        this.playAgainBtn = document.querySelector('#playAgain');
+        this.playAgainBtn.addEventListener('click', this.playAgain);
+        this.bet = document.querySelector('#bet')
+        this.playersMoney = document.querySelector('#playersMoney')
+        this.dealersMoney = document.querySelector('#dealersMoney')
+        this.playersWallet = 500;
+        this.dealersWallet = 500;
+        this.displayMoney()
     }
 
+    playAgain = () =>{
+        console.log('dupa')
+        this.deck = this.generateDeck();
+        this.shuffleDeck();
+        this.playersPoints = 0;
+        this.dealersPoints = 0;
+        this.dealerMove = false;
+        this.standBtn.style.display = 'inline-block';
+        this.getCardBtn.style.display = 'inline-block';
+        this.playAgainBtn.style.display = 'none';
+        document.querySelector('#playersCards').innerHTML = '';
+        document.querySelector('#dealersCards').innerHTML = '';
+        document.querySelector('#message').style.display = 'none'
+        document.querySelector('#playersPoints').innerHTML = '';
+        document.querySelector('#dealersPoints').innerHTML = '';
+    }
+
+    displayMoney(){
+        this.playersMoney.textContent = this.playersWallet;
+        this.dealersMoney.textContent = this.dealersWallet;
+    }
     shuffleDeck(){
         return this.deck.sort(() => Math.random() - 0.5)
     }
 
+    betMoney(){
+
+    }
+
     countPoints(card, parentId){
+        //here is more cleaver way to implement below method, at this stage developer was 
+        //given that option of solution,but prefers to use one below with if & else 
         // const property = parentId.replace('Cards', 'Points');
         // this[property] += card.value;
         // document.querySelector(`#${property}`).innerHTML = this[property];
@@ -56,6 +93,7 @@ class Game {
         card.render(parentId);
         this.deck.shift();
         this.countPoints(card, parentId)
+        new Audio('assets/sounds/dealing_card.wav').play();
     }
 
     generateDeck(){
@@ -68,29 +106,64 @@ class Game {
         return deck;
     }
 
-    getCards(){
+    getPlayerCards(){
         this.getCardBtn.addEventListener('click', () => {
+            
             const limit = this.playersPoints == 0 && this.dealersPoints == 0 ? 2 : 1;
-            ['playersCards', 'dealersCards'].forEach(el => {
-                for(let i = 0; i < limit; i++){
-                    this.displayDeck(el);
-                }
-            })
+            for(let i = 0; i < limit; i++){
+                setTimeout(() => {
+                    this.displayDeck('playersCards');
+                }, i * 1000);
+            }
         })
     }
 
+    getDealersCards = () => {
+        this.getCardBtn.style.display = 'none';
+        this.standBtn.style.display = 'none'
+
+        const displayDealerCards = setInterval( () => {
+            this.displayDeck('dealersCards');
+            if(this.dealersPoints >= this.playersPoints){
+                this.dealerMove = true;
+                this.checkCards()
+                clearInterval(displayDealerCards)
+            }
+        },1000 )
+    }
+
+
     checkCards(){
         const message = document.querySelector('#message');
-        if(this.dealersPoints == 21 || this.dealersPoints == 22 && document.querySelector('#dealersCards').children.length == 2){
-             message.textContent = 'Dealer Wins !!!'
-             message.style.color = 'red'
-             message.style.display = 'block'
-            
-        }     
+        const playerCardsLength = document.querySelector('#playersCards').children.length;
+        const dealerCardsLength = document.querySelector('#dealersCards').children.length;
+
+
+        if((this.playersPoints > 21 && playerCardsLength  > 2) || (this.dealersPoints >= this.playersPoints && (this.dealersPoints <= 21 || this.dealersPoints == 22 && dealerCardsLength == 2))){
+            new Audio('assets/sounds/lose_beep.wav').play();
+            message.textContent = 'Dealer Wins !!!'
+            message.style.color = 'red'
+            message.style.display = 'block'
+            this.playAgainBtn.style.display = 'block'
+            this.getCardBtn.style.display = 'none';
+            this.standBtn.style.display = 'none'
+
+        }
+
+        else if((this.dealersPoints > 21 && dealerCardsLength > 2) || (this.playersPoints >= this.dealersPoints && (this.playersPoints <= 21 || this.playersPoints == 22 && playerCardsLength == 2)) && this.dealersMove){
+            message.textContent = 'You Win !!!'
+            message.style.color = 'gold'
+            message.style.display = 'block'
+            new Audio('assets/sounds/win_beep.mp3').play();
+            this.playAgainBtn.style.display = 'block'
+        }
+        
     }
 }
 
 const blackJack = new Game();
+
+
 
 
 
