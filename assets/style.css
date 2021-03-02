@@ -88,6 +88,7 @@ h2 {
 #buttons {
 	padding-top: 50px;
 	text-align: center;
+	display:none;
 }
 #buttons button {
 	padding: 10px 30px;
@@ -103,5 +104,9 @@ img{
 }
 
 #playAgain{
+	display: none;
+}
+
+#stand{
 	display: none;
 }
