@@ -57,6 +57,9 @@ class Game {
             if(button.dataset.bet > this.playersWallet){
                 button.style.display = 'none';
             }
+            else{
+                button.style.display = 'inline-block'
+            }
         }
 
         this.deck = this.generateDeck();
@@ -100,24 +103,27 @@ class Game {
     countPoints(card, parentId){
         //here is more cleaver way to implement below method, at this stage developer was 
         //given that option of solution,but prefers to use one below with if & else
-        // const property = parentId.replace('Cards', 'Points');
-        // this[property] += card.value;
-        // document.querySelector(`#${property}`).innerHTML = this[property];
-        
-        if(card.figure == 'ace' && document.querySelector(`#${parentId}`).children.length > 2){
+        const property = parentId.replace('Cards', 'Points');
+
+        if(card.figure == 'ace' && this[property] > 10 && document.querySelector(`#${parentId}`).children.length > 2 ){
             card.value = 1;
         }
 
-        if(parentId == 'playersCards'){
-            this.playersPoints += card.value
-            const playerPoints = document.querySelector('#playersPoints')
-            playerPoints.textContent = this.playersPoints
-        }
-        else {
-            this.dealersPoints += card.value
-            const dealerPoints = document.querySelector('#dealersPoints')
-            dealerPoints.textContent = this.dealersPoints
-        }
+        this[property] += card.value;
+        document.querySelector(`#${property}`).innerHTML = this[property];
+        
+      
+
+        // if(parentId == 'playersCards'){
+        //     this.playersPoints += card.value
+        //     const playerPoints = document.querySelector('#playersPoints')
+        //     playerPoints.textContent = this.playersPoints
+        // }
+        // else {
+        //     this.dealersPoints += card.value
+        //     const dealerPoints = document.querySelector('#dealersPoints')
+        //     dealerPoints.textContent = this.dealersPoints
+        // }
         this.checkCards()
     }
 
