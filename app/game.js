@@ -91,7 +91,6 @@ class Game {
             button.addEventListener('click', e => {
                 this.gameButtons.style.display = 'block';
                 this.getCardBtn.style.display = 'inline-block';
-                //this.standBtn.style.display = 'inline-block';
                 this.betButtons.style.display = 'none';
                 this.playersWallet = this.playersWallet - e.target.dataset.bet;
                 this.currentBet = e.target.dataset.bet *  2;
@@ -108,22 +107,8 @@ class Game {
         if(card.figure == 'ace' && this[property] > 10 && document.querySelector(`#${parentId}`).children.length > 2 ){
             card.value = 1;
         }
-
         this[property] += card.value;
         document.querySelector(`#${property}`).innerHTML = this[property];
-        
-      
-
-        // if(parentId == 'playersCards'){
-        //     this.playersPoints += card.value
-        //     const playerPoints = document.querySelector('#playersPoints')
-        //     playerPoints.textContent = this.playersPoints
-        // }
-        // else {
-        //     this.dealersPoints += card.value
-        //     const dealerPoints = document.querySelector('#dealersPoints')
-        //     dealerPoints.textContent = this.dealersPoints
-        // }
         this.checkCards()
     }
 
